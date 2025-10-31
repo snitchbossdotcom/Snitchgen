@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Codeforge Gen</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .fade-in { animation: fadeIn .28s ease both; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity:1; transform:none; } }
+  .btn-press { transition: transform .12s ease; }
+  .btn-press:active { transform: translateY(2px) scale(.995); }
+  .spark { width:8px;height:8px;border-radius:999px;opacity:.9;position:absolute;transform:scale(.9);animation: pop .8s ease forwards; }
+  @keyframes pop { 0% { transform: translateY(0) scale(1); opacity:1 } 100% { transform: translateY(-30px) scale(.3); opacity:0 } }
+</style>
+</head>
+<body class="bg-slate-900 text-slate-100 antialiased min-h-screen">
+
+<header class="flex items-center justify-between px-6 py-4">
+  <div class="flex items-center gap-3">
+    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-700 to-cyan-500 flex items-center justify-center text-black font-extrabold">CG</div>
+    <div>
+      <div class="text-lg font-semibold">Codeforge Gen</div>
+      <div class="text-sm text-slate-400">Secure key-based generator — all processing local.</div>
+    </div>
+  </div>
+
+  <nav class="flex items-center gap-3">
+    <button id="download-all" class="btn-press bg-slate-800 px-3 py-2 rounded-lg text-sm hover:bg-slate-700">Download .txt</button>
+    <button id="clear-all" class="btn-press bg-slate-800 px-3 py-2 rounded-lg text-sm hover:bg-slate-700">Clear</button>
+  </nav>
+</header>
+
+<main class="max-w-4xl mx-auto px-6 pb-12">
+  <section class="grid md:grid-cols-2 gap-6">
+    <div class="bg-slate-800 rounded-2xl p-6 fade-in">
+      <h2 class="text-2xl font-semibold mb-2">Generate</h2>
+      <p class="text-sm text-slate-400 mb-4">Client-side generation. Entries stored locally in your browser.</p>
+
+      <!-- KEY PANEL -->
+      <div class="mb-4 p-3 rounded-lg bg-slate-900">
+        <label class="text-sm text-slate-300">Enter Access Key</label>
+        <div class="flex gap-2 mt-2">
+          <input id="userKey" class="flex-1 p-3 rounded-lg bg-slate-700 text-slate-100" placeholder="Enter your access key">
+          <button id="unlockKey" class="btn-press bg-emerald-500 px-4 py-2 rounded-lg text-black font-semibold">Unlock</button>
+        </div>
+        <div class="mt-2 text-sm text-slate-400">Status: <span id="keyStatus">Locked</span></div>
+      </div>
+
+      <label class="block text-sm text-slate-300 mb-1">Service</label>
+      <select id="service" class="w-full p-3 rounded-lg bg-slate-700 text-slate-100 mb-3">
+        <option value="minecraft">Minecraft</option>
+        <option value="nitro">Discord Nitro</option>
+        <option value="generic">Key</option>
+      </select>
+
+      <div class="flex gap-3 mb-3">
+        <div class="flex-1">
+          <label class="block text-sm text-slate-300 mb-1">Amount</label>
+          <input id="amount" type="number" min="1" max="200" value="10" class="w-full p-3 rounded-lg bg-slate-700 text-slate-100"/>
+        </div>
+        <div class="w-40">
+          <label class="block text-sm text-slate-300 mb-1">Max per click</label>
+          <select id="limit" class="w-full p-3 rounded-lg bg-slate-700 text-slate-100">
+            <option value="20">20</option><option value="50">50</option><option value="100">100</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex gap-3 mb-4">
+        <button id="generate" class="btn-press bg-gradient-to-r from-violet-600 to-cyan-400 px-4 py-2 rounded-lg font-semibold text-black shadow">Generate</button>
+        <button id="shuffle-style" class="btn-press bg-slate-700 px-4 py-2 rounded-lg">Randomize format</button>
+      </div>
+
+      <div class="text-sm text-slate-400 mb-4">Options</div>
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex items-center gap-2"><input id="useEmailPass" type="checkbox" checked class="accent-cyan-400"/> Email:Pass format (Minecraft)</label>
+        <label class="flex items-center gap-2"><input id="includePrefix" type="checkbox" checked class="accent-cyan-400"/> Nitro prefix</label>
+      </div>
+
+      <hr class="my-4 border-slate-700" />
+
+      <div class="text-sm text-slate-400">Generated preview </div>
+      <textarea id="results" rows="10" class="w-full mt-2 p-3 rounded-lg bg-slate-900 text-slate-100" placeholder="Generated entries will appear here" readonly></textarea>
+    </div>
+
+    <aside class="bg-slate-800 rounded-2xl p-6 fade-in">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="text-2xl font-semibold">Stats</div>
+          <div class="text-sm text-slate-400">Live tracking of generated items</div>
+        </div>
+        <div class="text-right">
+          <div id="totalCount" class="text-3xl font-bold">0</div>
+          <div class="text-sm text-slate-400">total</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 mt-4">
+        <div class="p-3 bg-slate-700 rounded-lg text-center">
+          <div id="mcCount" class="text-xl font-semibold">0</div>
+          <div class="text-sm text-slate-400">Minecraft</div>
+        </div>
+        <div class="p-3 bg-slate-700 rounded-lg text-center">
+          <div id="nitroCount" class="text-xl font-semibold">0</div>
+          <div class="text-sm text-slate-400">Nitro</div>
+        </div>
+        <div class="p-3 bg-slate-700 rounded-lg text-center">
+          <div id="genCount" class="text-xl font-semibold">0</div>
+          <div class="text-sm text-slate-400">Key</div>
+        </div>
+      </div>
+
+      <hr class="my-4 border-slate-700" />
+
+      <div class="text-sm text-slate-400 mb-2">Actions</div>
+      <div class="flex gap-3">
+        <button id="copy-all" class="btn-press flex-1 bg-slate-700 px-4 py-2 rounded-lg">Copy All</button>
+        <button id="export-csv" class="btn-press bg-slate-700 px-4 py-2 rounded-lg">Export .csv</button>
+      </div>
+
+      <div class="mt-4 text-sm text-slate-400">Tips</div>
+      <ul class="text-sm text-slate-400 list-disc list-inside mt-2">
+        <li>Save your generated list using <strong>Download .txt</strong>.</li>
+        <li>Use <strong>Copy All</strong> to paste into checkers or tools.</li>
+        <li>Clear data anytime with the header button.</li>
+      </ul>
+    </aside>
+  </section>
+</main>
+
+<footer class="text-center text-slate-500 text-sm py-8">Codeforge Gen © 2025 — Educational & Development Use Only</footer>
+
+<script>
+
+const el = id => document.getElementById(id);
+const rand = n => Math.floor(Math.random() * n);
+const randomAlpha = len => Math.random().toString(36).slice(2, 2+len);
+const randomUpper = len => Array.from({length:len}, ()=> String.fromCharCode(65 + rand(26))).join('');
+const nowIso = ()=> new Date().toISOString();
+
+const NAMESPACE = 'Codeforge Gen';
+const CLIENT_ID_KEY = 'cg_client_id_v1';
+let clientId = localStorage.getItem(CLIENT_ID_KEY);
+if (!clientId) { clientId = 'c_' + Math.random().toString(36).slice(2,12); localStorage.setItem(CLIENT_ID_KEY, clientId); }
+
+// state
+const state = {
+  items: JSON.parse(localStorage.getItem(NAMESPACE) || '[]'),
+  unlockedKey: null,
+  keysData: null,
+  blockedClients: []
+};
+
+// LOAD keys.json
+async function loadKeysJson() {
+  try {
+    const res = await fetch('keys.json', {cache: "no-store"});
+    if (!res.ok) throw new Error('keys.json not found');
+    const data = await res.json();
+    state.keysData = data.keys || [];
+    state.blockedClients = data.blocked_clients || [];
+  } catch (e) {
+    state.keysData = [];
+    state.blockedClients = [];
+  }
+}
+
+// helper: find key entry
+function findKey(k) {
+  if (!state.keysData) return null;
+  return state.keysData.find(x => x.key === k);
+}
+
+// save local state
+function saveState() { localStorage.setItem(NAMESPACE, JSON.stringify(state.items)); renderResults(); renderStats(); }
+
+// clear
+el('clear-all').addEventListener('click', ()=> {
+  if(!confirm('Clear all generated items from this browser?')) return;
+  state.items = []; saveState();
+});
+
+// unlock key button
+el('unlockKey').addEventListener('click', ()=> {
+  const val = el('userKey').value.trim();
+  if (!val) return alert('Enter a key');
+  if (state.blockedClients.includes(clientId)) { alert('This client is blocked'); return; }
+  const keyObj = findKey(val);
+  if (!keyObj) { alert('Invalid or expired key'); return; }
+  
+  if (keyObj.type === 'temp' && keyObj.expire_at) {
+    if (new Date(keyObj.expire_at).getTime() < Date.now()) { alert('Key has expired'); return; }
+  }
+  
+  const clientStoreKey = 'clients_for_KEY_' + keyObj.key;
+  let clients = JSON.parse(localStorage.getItem(clientStoreKey) || '[]');
+  if (!clients.includes(clientId)) {
+    if (clients.length >= (keyObj.max_clients || 1)) { alert('Key limit reached'); return; }
+    clients.push(clientId);
+    localStorage.setItem(clientStoreKey, JSON.stringify(clients));
+  }
+  state.unlockedKey = keyObj.key;
+  localStorage.setItem('last_unlocked_key', keyObj.key);
+  el('keyStatus').textContent = 'Unlocked';
+  alert('Access granted — generate now.');
+});
+
+// Generation
+function genMinecraft() {
+  const user = randomAlpha(6) + Math.floor(Math.random()*999);
+  const domain = ['hotmail.com','gmail.com','yahoo.com','outlook.com','proton.me'][rand(5)];
+  const pass = randomAlpha(8) + String(rand(90)+10);
+  return el('useEmailPass').checked ? `${user}@${domain}:${pass}` : pass;
+}
+function genNitro() {
+  const code = randomAlpha(10) + randomUpper(6);
+  const prefix = el('includePrefix').checked ? 'discord.gift/' : '';
+  return `${prefix}${code}`;
+}
+function genGeneric() {
+  return 'KEY-' + randomAlpha(6).toUpperCase() + '-' + Math.floor(1000 + Math.random()*8999);
+}
+
+// generate button
+el('generate').addEventListener('click', ()=> {
+  if (!state.unlockedKey) { alert('Unlock with a valid key first'); return; }
+  if (state.blockedClients.includes(clientId)) { alert('Access restricted'); return; }
+
+  const service = el('service').value;
+  let amt = parseInt(el('amount').value) || 1;
+  const limit = parseInt(el('limit').value) || 20;
+  if (amt > limit) { if(!confirm(`Generating ${amt} items exceeds limit. Continue?`)) return; }
+  amt = Math.min(amt, 500);
+
+  const arr = [];
+  for (let i=0;i<amt;i++){
+    let entry = '';
+    if(service==='minecraft') entry = genMinecraft();
+    else if(service==='nitro') entry = genNitro();
+    else entry = genGeneric();
+
+    const obj = { service, entry, created_at: nowIso(), key_used: state.unlockedKey, client_id: clientId };
+    state.items.push(obj);
+    arr.push(obj.entry);
+  }
+  saveState();
+
+  const ta = el('results');
+  ta.value = (ta.value ? ta.value + '\n' : '') + arr.join('\n');
+
+  // spark effect
+  for(let i=0;i<6;i++){
+    const s = document.createElement('div');
+    s.className='spark';
+    s.style.left = (20 + Math.random()*60) + '%';
+    s.style.top = (40 + Math.random()*20) + '%';
+    s.style.background = ['#60a5fa','#f472b6','#fb7185','#34d399','#f59e0b'][rand(5)];
+    document.body.appendChild(s);
+    setTimeout(()=> s.remove(), 900);
+  }
+});
+
+// render
+function renderResults() {
+  el('results').value = state.items.map(i => `[${i.service}] ${i.entry}`).join('\n');
+}
+function renderStats() {
+  const total = state.items.length;
+  el('totalCount').textContent = total;
+  el('mcCount').textContent = state.items.filter(x=>x.service==='minecraft').length;
+  el('nitroCount').textContent = state.items.filter(x=>x.service==='nitro').length;
+  el('genCount').textContent = state.items.filter(x=>x.service==='generic').length;
+}
+
+// copy, download, csv
+el('copy-all').addEventListener('click', async ()=> {
+  const text = state.items.map(i => i.entry).join('\n');
+  if (!text) return alert('Nothing to copy');
+  try { await navigator.clipboard.writeText(text); alert('Copied!'); }
+  catch { prompt('Copy manually (Ctrl+C):', text); }
+});
+el('download-all').addEventListener('click', ()=> {
+  const text = state.items.map(i => i.entry).join('\n');
+  if(!text){ alert('No items generated'); return; }
+  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'codeforge-gen.txt'; 
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+el('export-csv').addEventListener('click', ()=> {
+  const rows = [['service','entry','created_at','key_used','client_id'], ...state.items.map(i=>[i.service,i.entry,i.created_at,i.key_used,i.client_id])];
+  const csv = rows.map(r => r.map(cell => '"'+String(cell).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'codeforge-gen.csv'; 
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+el('shuffle-style').addEventListener('click', ()=> {
+  el('useEmailPass').checked = Math.random() > 0.5;
+  el('includePrefix').checked = Math.random() > 0.5;
+  alert('Format options randomized');
+});
+
+// init
+(async function init(){
+  await loadKeysJson();
+  if (!Array.isArray(state.items)) state.items = [];
+  renderResults();
+  renderStats();
+
+  const storedKey = localStorage.getItem('last_unlocked_key');
+  if (storedKey && findKey(storedKey)) {
+    state.unlockedKey = storedKey;
+    el('keyStatus').textContent = 'Unlocked';
+  }
+})();
+</script>
+</body>
+  </html>
