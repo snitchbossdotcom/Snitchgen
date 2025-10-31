@@ -1,0 +1,31 @@
+{
+  "keys": [
+    {
+      "key": "demo-free",
+      "type": "lifetime",
+      "created_at": "2025-10-31T12:00:00Z",
+      "expire_at": null,
+      "max_clients": 5,
+      "clients": []
+    },
+    {
+      "key": "temp-1h",
+      "type": "temp",
+      "created_at": "2025-10-31T12:00:00Z",
+      "expire_at": "2025-11-01T12:00:00Z",
+      "max_clients": 2,
+      "clients": []
+    },
+    {
+      "key": "vip-key",
+      "type": "lifetime",
+      "created_at": "2025-10-31T12:00:00Z",
+      "expire_at": null,
+      "max_clients": 20,
+      "clients": []
+    }
+  ],
+  "blocked_clients": [
+    "banned-client-123"
+  ]
+}
