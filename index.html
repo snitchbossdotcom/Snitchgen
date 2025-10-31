@@ -139,7 +139,7 @@ const randomAlpha = len => Math.random().toString(36).slice(2, 2+len);
 const randomUpper = len => Array.from({length:len}, ()=> String.fromCharCode(65 + rand(26))).join('');
 const nowIso = ()=> new Date().toISOString();
 
-const NAMESPACE = 'demo_gen_v1';
+const NAMESPACE = 'Codeforge Gen';
 const CLIENT_ID_KEY = 'demo_client_id_v1';
 let clientId = localStorage.getItem(CLIENT_ID_KEY);
 if (!clientId) { clientId = 'c_' + Math.random().toString(36).slice(2,12); localStorage.setItem(CLIENT_ID_KEY, clientId); }
