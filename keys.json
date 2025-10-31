@@ -17,11 +17,11 @@
       "clients": []
     },
     {
-      "key": "vip-key",
+      "key": "vip56543876529-key",
       "type": "lifetime",
       "created_at": "2025-10-31T12:00:00Z",
       "expire_at": null,
-      "max_clients": 20,
+      "max_clients": 10,
       "clients": []
     }
   ],
