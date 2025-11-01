@@ -204,7 +204,7 @@ el('unlockKey').addEventListener('click', ()=> {
 // Generation
 function genMinecraft() {
   const user = randomAlpha(6) + Math.floor(Math.random()*999);
-  const domain = ['hotmail.com','gmail.com','yahoo.com','outlook.com','proton.me'][rand(5)];
+  const domain = ['hotmail.com','gmail.com','yahoo.com','outlook.com'][rand(5)];
   const pass = randomAlpha(8) + String(rand(90)+10);
   return el('useEmailPass').checked ? `${user}@${domain}:${pass}` : pass;
 }
