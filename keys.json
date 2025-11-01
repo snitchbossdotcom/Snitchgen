@@ -23,14 +23,6 @@
       "expire_at": 2025-11-11T12:00:00Z,
       "max_clients": 10,
       "clients": []
-    },
-    {
-      "key": "lalalalalalalallalalalala",
-      "type": "temp",
-      "created_at": "2025-11-1T12:00:00Z",
-      "expire_at": 2025-11-07T19:00:00Z,
-      "max_clients": 1,
-      "clients": []
     }
   ],
   "blocked_clients": [
